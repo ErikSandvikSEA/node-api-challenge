@@ -141,28 +141,6 @@ router.put(
                })
      })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //middleware
 function validateProjectId(req, res, next) {
      Projects.get(req.params.id)
