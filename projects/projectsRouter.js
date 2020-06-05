@@ -3,6 +3,7 @@ const Projects = require('../data/helpers/projectModel.js')
 
 const router = express.Router()
 
+//GETs
 router.get(`/`, (req, res) => {
      Projects.get()
           .then(projectsArray => {
@@ -30,6 +31,53 @@ router.get(`/:id/actions`, validateProjectId, (req, res) => {
           })
 })
 
+//POSTs
+router.post(
+     `/`, 
+     requiredProperty('name'),
+     requiredProperty('description'), 
+     (req, res) => {
+          const newProject = req.body
+          Projects.insert(newProject)
+               .then(postedNewProject => {
+                    res.status(201).json({
+                         message: 'Project successfully posted!',
+                         postedNewProject
+                    })
+               })
+               .catch(err => {
+                    console.log(err)
+                    res.status(500).json({
+                         message: 'Error occurred during posting',
+                         error: err
+                    })
+               })
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //middleware
 function validateProjectId(req, res, next) {
      Projects.get(req.params.id)
@@ -50,6 +98,18 @@ function validateProjectId(req, res, next) {
                     message: 'Error retrieving the project'
                })
           })
+}
+
+function requiredProperty(property){
+     return (req, res, next) => {
+       if(!req.body[property]){
+         res.status(400).json({
+           message: `Needs to include a required ${property} property`
+         })
+       } else {
+       next()
+       }
+     }
 }
 
 module.exports = router
