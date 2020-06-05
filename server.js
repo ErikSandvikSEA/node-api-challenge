@@ -5,6 +5,7 @@ const projectsRouter = require('./projects/projectsRouter')
 const actionsRouter = require('./actions/actionsRouter')
 
 const server = express()
+const cors = require('cors')
 
 const port = process.env.PORT || 6000
 
@@ -17,6 +18,7 @@ function logger(req, res, next) {
 
 server.use(helmet())
 server.use(express.json())
+server.use(cors())
 server.use(logger)
 server.use(`/api/projects`, projectsRouter)
 server.use(`/api/actions`, actionsRouter)
