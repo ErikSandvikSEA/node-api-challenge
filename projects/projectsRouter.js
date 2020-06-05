@@ -1,5 +1,6 @@
 const express = require('express')
 const Projects = require('../data/helpers/projectModel.js')
+const Actions = require('../data/helpers/actionModel.js')
 
 const router = express.Router()
 
@@ -54,6 +55,38 @@ router.post(
                })
 })
 
+router.post(
+     `/:id/actions`, 
+     validateProjectId, 
+     requiredProperty('description'), 
+     requiredProperty('notes'),
+     (req, res) => {
+          const projectId = req.params.id
+          const newAction = {
+               ...req.body,
+               project_id: Number(projectId)
+          }
+          if(newAction.description.length > 128){
+               res.status(400).json({
+                    message: 'Maximum description character limit: 128'
+               })
+          } else {
+               Actions.insert(newAction)
+                    .then(postedNewAction => {
+                         res.status(201).json({
+                              message: 'Action added successfully',
+                              postedNewAction
+                         })
+                    })
+                    .catch(err => {
+                         console.log(err)
+                         res.status(500).json({
+                              message: 'Error occurred while posting'
+                         })
+                    })
+          }
+     }
+     )
 
 
 
