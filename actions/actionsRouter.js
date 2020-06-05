@@ -35,11 +35,6 @@ router.post(
      requiredProperty('notes'),
      (req, res) => {
           const newAction = req.body
-          let projectId = req.body.project_id
-          router.get(`http://localhost:${port}/${projectId}`, validateProjectId, (req, res) => {
-               const project = req.project
-               res.status(200).json(project)
-          })
           if(newAction.description.length > 128){
                res.status(400).json({
                     message: 'Maximum description character limit: 128'
