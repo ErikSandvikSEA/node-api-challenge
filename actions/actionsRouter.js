@@ -35,11 +35,16 @@ router.post(
      requiredProperty('notes'),
      (req, res) => {
           const newAction = req.body
-          const projectId = req.body.project_id
+          let projectId = req.body.project_id
           router.get(`http://localhost:${port}/${projectId}`, validateProjectId, (req, res) => {
                const project = req.project
                res.status(200).json(project)
           })
+          if(newAction.description.length > 128){
+               res.status(400).json({
+                    message: 'Maximum description character limit: 128'
+               })
+          } else {
           Actions.insert(newAction)
                .then(postedNewAction => {
                     res.status(201).json({
@@ -50,9 +55,10 @@ router.post(
                .catch(err => {
                     console.log(err)
                     res.status(500).json({
-                         message: 'Error occurred while posting'
+                         message: 'Error occurred while posting, make sure the project_id exists'
                     })
                })
+          }
      })
 
      router.delete(`/:id`, validateActionId, (req, res) => {
@@ -78,6 +84,40 @@ router.post(
                     })
                })
      })
+
+     router.put(
+          `/:id`, 
+          validateActionId, 
+          requiredProperty('project_id'),
+          requiredProperty('description'),
+          requiredProperty('notes'),
+          (req, res) => {
+               const actionId = req.params.id
+               const actionUpdates = {
+                    ...req.body,
+                    id: actionId
+               }
+               if(actionUpdates.description.length > 128){
+                    res.status(400).json({
+                         message: 'Maximum description character limit: 128'
+                    })
+               } else {
+               Actions.update(actionId, actionUpdates)
+                    .then(updatedAction => {
+                         res.status(200).json({
+                              message: 'Action Successfully updated',
+                              updatedAction
+                         })
+                    })
+                    .catch(err => {
+                         console.log(err)
+                         res.status(500).json({
+                              message: 'Error occurred during updates, make sure you did not change the project_id',
+                              error: err
+                         })
+                    })
+               }
+          })
 
 //middleware
 function validateActionId(req, res, next) {
