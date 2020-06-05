@@ -86,7 +86,32 @@ router.post(
                     })
           }
      }
-     )
+)
+
+//DELETEs
+router.delete(`/:id`, validateProjectId, (req, res) => {
+     const projectId = req.params.id
+     Projects.remove(projectId)
+          .then(numberOfDeletedProjects => {
+               if(numberOfDeletedProjects === 1){
+                    res.status(200).json({
+                         message: 'Successfully deleted',
+                         numberOfDeletedProjects
+                    })
+               } else {
+                    res.status(500).json({
+                         message: 'Looks like you could not remove this post'
+                    })
+               }
+          })
+          .catch(err => {
+               console.log(err)
+               res.status(500).json({
+                    message: 'Looks like you could not remove this post',
+                    error: err
+               })
+          })
+})
 
 
 
