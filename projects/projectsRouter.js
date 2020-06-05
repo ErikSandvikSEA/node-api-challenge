@@ -113,6 +113,33 @@ router.delete(`/:id`, validateProjectId, (req, res) => {
           })
 })
 
+//PUTs
+router.put(
+     `/:id`, 
+     validateProjectId, 
+     requiredProperty('name'),
+     requiredProperty('description'),
+     (req, res) => {
+          const projectId = req.params.id
+          const projectUpdates = {
+               ...req.body,
+               id: projectId
+          }
+          Projects.update(projectId, projectUpdates)
+               .then(updatedProject => {
+                    res.status(200).json({
+                         message: 'Project Successfully updated',
+                         updatedProject
+                    })
+               })
+               .catch(err => {
+                    console.log(err)
+                    res.status(500).json({
+                         message: 'Error occurred during updates',
+                         error: err
+                    })
+               })
+     })
 
 
 
